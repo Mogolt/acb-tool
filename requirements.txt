@@ -1,0 +1,5 @@
+# Runtime dependencies for ACB Tool.
+# Version pins to be confirmed in Phase 1 spike.
+
+PyCriCodecsEx==0.0.5  # verified 2026-04-22 on Python 3.10 win_amd64 (see docs/phase1_pycricodecsex_derisk.md)
+pyinstaller>=6.0    # build-time only; kept here for one-stop install

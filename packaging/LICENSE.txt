@@ -1,0 +1,45 @@
+ACB Tool
+========
+
+Copyright (C) 2026 Mogolt
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+The full GPL-3.0 text is also included in the installed tree as
+LICENSE alongside this file.
+
+
+Third-party components bundled with ACB Tool
+=============================================
+
+PyCriCodecsEx (mos9527) — MIT (via upstream PyCriCodecs)
+    CRIWARE ACB/AWB/HCA read + write library.
+    Upstream: https://github.com/mos9527/PyCriCodecsEx
+
+PyCriCodecs (Youjose) — MIT
+    Upstream of PyCriCodecsEx.
+    Upstream: https://github.com/Youjose/PyCriCodecs
+
+vgmstream — BSD-3-Clause
+    Canonical HCA / ADX reference decoder.
+    Upstream: https://github.com/vgmstream/vgmstream
+
+VGAudio (Thealexbarney) — MIT
+    HCA encoder reference.
+    Upstream: https://github.com/Thealexbarney/VGAudio
+
+All third-party licenses are compatible with GPL-3.0 as permissive
+dependencies. Each upstream project ships under its own license; please
+refer to the project's LICENSE file for full terms. The attributions
+shown here are also displayed inside the application under "? -> About".
