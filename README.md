@@ -5,8 +5,6 @@ the PS4 and Switch ports of **Resident Evil 4**. Drop a replacement WAV on a
 cue, save, copy the modified bank onto your console, and hear your audio
 in-game.
 
-![screenshots placeholder](docs/screenshots/README.md)
-
 ## Features
 
 - **Browse** — open an `.acb`, explore cues by name, extract the whole bank
