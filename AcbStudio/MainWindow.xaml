@@ -1,0 +1,142 @@
+<Window x:Class="AcbStudio.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:AcbStudio.Views"
+        Title="ACB Studio"
+        Width="1120" Height="760" MinWidth="980" MinHeight="660"
+        Background="{StaticResource BgBrush}"
+        FontFamily="Consolas"
+        Foreground="{StaticResource TextBrush}"
+        WindowStartupLocation="CenterScreen"
+        Opacity="0"
+        Closing="OnWindowClosing">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Accent strip -->
+        <Border Grid.Row="0" Background="{StaticResource AccentGradient}"/>
+
+        <!-- Header -->
+        <Grid Grid.Row="1" Margin="24,14,24,4">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="ACB STUDIO" FontSize="18" FontWeight="Bold"
+                           Foreground="{StaticResource TextBrush}"/>
+                <TextBlock Text="for RE4 PS4 &amp; Switch · CRIWARE ADX2 (ACB/AWB/HCA)" FontSize="11"
+                           Foreground="{StaticResource MutedBrush}" Margin="14,7,0,0"/>
+            </StackPanel>
+            <Button Style="{StaticResource FlatButton}" HorizontalAlignment="Right"
+                    Content="?" FontSize="15" FontWeight="Bold" Padding="13,4"
+                    Click="AboutClick"/>
+        </Grid>
+
+        <!-- Tab bar with sliding indicator -->
+        <Grid Grid.Row="2" Margin="14,2,14,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="3"/>
+                <RowDefinition Height="1"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <RadioButton x:Name="TabBrowse" Style="{StaticResource TabButton}" GroupName="tabs"
+                             Content="Browse" IsChecked="True" Checked="TabChecked"/>
+                <RadioButton x:Name="TabExtract" Style="{StaticResource TabButton}" GroupName="tabs"
+                             Content="Extract" Checked="TabChecked"/>
+                <RadioButton x:Name="TabInject" Style="{StaticResource TabButton}" GroupName="tabs"
+                             Content="Inject" Checked="TabChecked"/>
+                <RadioButton x:Name="TabConvert" Style="{StaticResource TabButton}" GroupName="tabs"
+                             Content="Convert" Checked="TabChecked"/>
+            </StackPanel>
+
+            <Canvas Grid.Row="1" x:Name="IndicatorCanvas">
+                <Border x:Name="TabIndicator" Height="3" Width="0" Canvas.Left="0"
+                        Background="{StaticResource AccentGradient}" CornerRadius="1.5"/>
+            </Canvas>
+
+            <Border Grid.Row="2" Background="{StaticResource LineBrush}" Margin="2,0"/>
+        </Grid>
+
+        <!-- Tab content -->
+        <Grid Grid.Row="3" x:Name="ContentHost">
+            <views:BrowseView x:Name="BrowseTabView" DataContext="{Binding Browse}">
+                <views:BrowseView.RenderTransform>
+                    <TranslateTransform/>
+                </views:BrowseView.RenderTransform>
+            </views:BrowseView>
+            <views:ExtractView x:Name="ExtractTabView" DataContext="{Binding Extract}" Visibility="Collapsed">
+                <views:ExtractView.RenderTransform>
+                    <TranslateTransform/>
+                </views:ExtractView.RenderTransform>
+            </views:ExtractView>
+            <views:InjectView x:Name="InjectTabView" DataContext="{Binding Inject}" Visibility="Collapsed">
+                <views:InjectView.RenderTransform>
+                    <TranslateTransform/>
+                </views:InjectView.RenderTransform>
+            </views:InjectView>
+            <views:ConvertView x:Name="ConvertTabView" DataContext="{Binding Convert}" Visibility="Collapsed">
+                <views:ConvertView.RenderTransform>
+                    <TranslateTransform/>
+                </views:ConvertView.RenderTransform>
+            </views:ConvertView>
+        </Grid>
+
+        <!-- Status bar -->
+        <Border Grid.Row="4" Background="{StaticResource PanelBrush}">
+            <Grid Margin="12,5">
+                <TextBlock Text="{Binding Status}" FontSize="11" Foreground="{StaticResource MutedBrush}"/>
+                <TextBlock Text="v2.0" FontSize="11" Foreground="{StaticResource MutedBrush}"
+                           Opacity="0.6" HorizontalAlignment="Right"/>
+            </Grid>
+        </Border>
+
+        <!-- About overlay -->
+        <Grid x:Name="AboutOverlay" Grid.RowSpan="5" Visibility="Collapsed" Opacity="0">
+            <Border Background="#C80D0D18" MouseLeftButtonDown="AboutScrimClick"/>
+            <Border x:Name="AboutCard" Width="620" MaxHeight="560" VerticalAlignment="Center"
+                    Background="{StaticResource BgBrush}" CornerRadius="10"
+                    BorderBrush="{StaticResource PanelHoverBrush}" BorderThickness="1">
+                <Border.RenderTransform>
+                    <TranslateTransform Y="26"/>
+                </Border.RenderTransform>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Border Background="{StaticResource AccentGradient}" CornerRadius="10,10,0,0"/>
+                    <ScrollViewer Grid.Row="1" Margin="28,18" VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="ACB Studio 2.0" FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource TextBrush}"/>
+                            <TextBlock Style="{StaticResource HintText}" Margin="0,4,0,14"
+                                       Text="CRIWARE ADX2 audio bank toolkit for the PS4 / Switch ports of Resident Evil 4. Browse cues, extract named WAVs, inject replacements with loop-aware re-encoding, and batch-convert WAV ↔ HCA."/>
+
+                            <TextBlock Style="{StaticResource SectionTitle}" Foreground="{StaticResource AccentBrush}" Text="How to inject"/>
+                            <TextBlock Style="{StaticResource HintText}" Margin="10,4,0,14" FontSize="12" Foreground="{StaticResource TextBrush}"
+                                       Text="1. Inject tab → open your .acb (the .awb auto-pairs by filename).&#10;2. Pick a waveform row — double-click to hear it.&#10;3. Replace with WAV… — any rate works, it auto-resamples to the bank.&#10;4. Save modified bank → drop both files onto your console via LayeredFS."/>
+
+                            <TextBlock Style="{StaticResource SectionTitle}" Foreground="{StaticResource AccentBrush}" Text="Credits"/>
+                            <TextBlock Style="{StaticResource HintText}" Margin="10,4,0,14" FontSize="12" Foreground="{StaticResource TextBrush}"
+                                       Text="• VGAudio by Thealexbarney — C# HCA encoder/decoder (MIT)&#10;• vgmstream — canonical HCA/ADX reference decoder (BSD-3)&#10;• PyCriCodecsEx by mos9527 &amp; PyCriCodecs by Youjose — powered the 1.x Python version (MIT)&#10;• SonicAudioTools &amp; CriTools — ACB/AWB structure references"/>
+
+                            <TextBlock Style="{StaticResource SectionTitle}" Foreground="{StaticResource AccentBrush}" Text="License"/>
+                            <TextBlock Style="{StaticResource HintText}" Margin="10,4,0,4" FontSize="12" Foreground="{StaticResource TextBrush}"
+                                       Text="GPL-3.0-or-later · © 2026 Mogolt&#10;Contains no game audio — dump your own banks from your own copy."/>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <Button Grid.Row="2" Style="{StaticResource FlatButton}" Content="Close"
+                            HorizontalAlignment="Center" Margin="0,0,0,18" Padding="22,7"
+                            Click="AboutCloseClick"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

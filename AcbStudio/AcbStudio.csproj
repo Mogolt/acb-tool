@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AcbStudio</RootNamespace>
+    <AssemblyName>AcbStudio</AssemblyName>
+    <Version>2.0.0</Version>
+    <Product>ACB Studio</Product>
+    <Description>CRIWARE ADX2 (ACB/AWB/HCA) audio bank toolkit for RE4 console ports</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="VGAudio" Version="2.2.1" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>
