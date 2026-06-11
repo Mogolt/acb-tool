@@ -11,6 +11,11 @@
     <Version>2.1.0</Version>
     <Product>ACB Studio</Product>
     <Description>CRIWARE ADX2 (ACB/AWB/HCA) audio bank toolkit for RE4 console ports</Description>
+    <!-- Bundle WPF's native DLLs (PresentationNative_cor3 etc.) into the
+         single-file exe; without this the published exe only runs when those
+         DLLs sit next to it. -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
