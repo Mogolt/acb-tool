@@ -16,9 +16,15 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
-            <TextBlock Style="{StaticResource SectionTitle}" FontSize="16" Text="Inject"/>
-            <TextBlock Style="{StaticResource HintText}" Margin="12,5,0,0"
-                       Text="(replace waveforms → rebuild AWB → patch ACB → save)"/>
+            <TextBlock Style="{StaticResource SectionTitle}" FontSize="16" Text="Replace Sounds"/>
+            <StackPanel Orientation="Horizontal" Margin="16,4,0,0">
+                <Border Style="{StaticResource StepBadge}"><TextBlock Style="{StaticResource StepBadgeText}" Text="1"/></Border>
+                <TextBlock Style="{StaticResource HintText}" Text="open a bank" VerticalAlignment="Center" Margin="0,0,14,0"/>
+                <Border Style="{StaticResource StepBadge}"><TextBlock Style="{StaticResource StepBadgeText}" Text="2"/></Border>
+                <TextBlock Style="{StaticResource HintText}" Text="pick a sound &amp; choose your WAV" VerticalAlignment="Center" Margin="0,0,14,0"/>
+                <Border Style="{StaticResource StepBadge}"><TextBlock Style="{StaticResource StepBadgeText}" Text="3"/></Border>
+                <TextBlock Style="{StaticResource HintText}" Text="save — loops &amp; sample rate handled automatically" VerticalAlignment="Center"/>
+            </StackPanel>
         </StackPanel>
 
         <!-- Pickers -->
@@ -69,7 +75,12 @@
         </Grid>
 
         <!-- Waveform list -->
-        <Border Grid.Row="3" Background="{StaticResource PanelBrush}" CornerRadius="6" MinHeight="150">
+        <Border Grid.Row="3" Background="{StaticResource PanelBrush}" CornerRadius="8" MinHeight="150">
+            <Grid>
+            <TextBlock Style="{StaticResource HintText}" FontSize="12.5" HorizontalAlignment="Center"
+                       VerticalAlignment="Center" TextAlignment="Center" MaxWidth="380"
+                       Text="No bank open yet.&#10;&#10;Click Browse above and pick the .acb you want to modify — or drop it anywhere in this window."
+                       Visibility="{Binding Waveforms.Count, Converter={StaticResource ZeroToVis}}"/>
             <ListBox Style="{StaticResource DarkListBox}" SelectionMode="Single"
                      ItemsSource="{Binding Waveforms}"
                      SelectedItem="{Binding SelectedWaveform}"
@@ -98,6 +109,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            </Grid>
         </Border>
 
         <!-- Action buttons -->

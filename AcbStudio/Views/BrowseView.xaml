@@ -15,9 +15,9 @@
 
         <!-- Title row -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
-            <TextBlock Style="{StaticResource SectionTitle}" FontSize="16" Text="Full Project"/>
+            <TextBlock Style="{StaticResource SectionTitle}" FontSize="16" Text="Browse &amp; Extract"/>
             <TextBlock Style="{StaticResource HintText}" Margin="12,5,0,0"
-                       Text="(ACB + AWB → named WAVs using cue names)"/>
+                       Text="open a bank, hear every cue, save them all as named WAVs"/>
         </StackPanel>
 
         <!-- Pickers -->
@@ -47,59 +47,12 @@
                     Content="Browse" Command="{Binding BrowseOutCommand}"/>
         </Grid>
 
-        <!-- Cue tree + waveform list -->
-        <Grid Grid.Row="2" Margin="0,8,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="14"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <!-- Cue tree + (advanced) waveform list -->
+        <DockPanel Grid.Row="2" Margin="0,8,0,0">
 
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <TextBlock Style="{StaticResource HintText}" Text="Cues" Margin="2,0,0,3"/>
-                <Grid Grid.Row="1" Margin="14,0,14,2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="62"/>
-                        <ColumnDefinition Width="64"/>
-                        <ColumnDefinition Width="50"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Style="{StaticResource HintText}" Text="Name"/>
-                    <TextBlock Grid.Column="1" Style="{StaticResource HintText}" Text="Cue ID"/>
-                    <TextBlock Grid.Column="2" Style="{StaticResource HintText}" Text="Length"/>
-                    <TextBlock Grid.Column="3" Style="{StaticResource HintText}" Text="Waves"/>
-                </Grid>
-                <Border Grid.Row="2" Background="{StaticResource PanelBrush}" CornerRadius="6">
-                    <ListBox Style="{StaticResource DarkListBox}" SelectionMode="Single"
-                             ItemsSource="{Binding Cues}"
-                             SelectedItem="{Binding SelectedCue}"
-                             ItemContainerStyle="{StaticResource TrackListItem}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="62"/>
-                                        <ColumnDefinition Width="64"/>
-                                        <ColumnDefinition Width="50"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}" Foreground="{StaticResource TextBrush}" TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding CueIdText}" Foreground="{StaticResource MutedBrush}"/>
-                                    <TextBlock Grid.Column="2" Text="{Binding LengthText}" Foreground="{StaticResource TextBrush}"/>
-                                    <TextBlock Grid.Column="3" Text="{Binding WaveCountText}" Foreground="{StaticResource MutedBrush}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Border>
-            </Grid>
-
-            <Grid Grid.Column="2">
+            <!-- Waveform internals: advanced mode only -->
+            <Grid DockPanel.Dock="Right" Width="470" Margin="14,0,0,0"
+                  Visibility="{Binding DataContext.Options.IsAdvanced, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -124,7 +77,7 @@
                     <TextBlock Grid.Column="5" Style="{StaticResource HintText}" Text="Samples"/>
                     <TextBlock Grid.Column="6" Style="{StaticResource HintText}" Text="Loop"/>
                 </Grid>
-                <Border Grid.Row="2" Background="{StaticResource PanelBrush}" CornerRadius="6">
+                <Border Grid.Row="2" Background="{StaticResource PanelBrush}" CornerRadius="8">
                     <ListBox x:Name="WaveformList" Style="{StaticResource DarkListBox}" SelectionMode="Extended"
                              ItemsSource="{Binding Waveforms}"
                              ItemContainerStyle="{StaticResource TrackListItem}"
@@ -154,7 +107,58 @@
                     </ListBox>
                 </Border>
             </Grid>
-        </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Style="{StaticResource HintText}" Text="Cues" Margin="2,0,0,3"/>
+                <Grid Grid.Row="1" Margin="14,0,14,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="62"/>
+                        <ColumnDefinition Width="64"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource HintText}" Text="Name"/>
+                    <TextBlock Grid.Column="1" Style="{StaticResource HintText}" Text="Cue ID"/>
+                    <TextBlock Grid.Column="2" Style="{StaticResource HintText}" Text="Length"/>
+                    <TextBlock Grid.Column="3" Style="{StaticResource HintText}" Text="Waves"/>
+                </Grid>
+                <Border Grid.Row="2" Background="{StaticResource PanelBrush}" CornerRadius="8">
+                    <Grid>
+                    <TextBlock Style="{StaticResource HintText}" FontSize="12.5" HorizontalAlignment="Center"
+                               VerticalAlignment="Center" TextAlignment="Center" MaxWidth="360"
+                               Text="No bank open yet.&#10;&#10;Click Browse above and pick an .acb file — or just drop one anywhere in this window."
+                               Visibility="{Binding Cues.Count, Converter={StaticResource ZeroToVis}}"/>
+                    <ListBox Style="{StaticResource DarkListBox}" SelectionMode="Single"
+                             ItemsSource="{Binding Cues}"
+                             SelectedItem="{Binding SelectedCue}"
+                             ItemContainerStyle="{StaticResource TrackListItem}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="62"/>
+                                        <ColumnDefinition Width="64"/>
+                                        <ColumnDefinition Width="50"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Name}" Foreground="{StaticResource TextBrush}" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding CueIdText}" Foreground="{StaticResource MutedBrush}"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding LengthText}" Foreground="{StaticResource TextBrush}"/>
+                                    <TextBlock Grid.Column="3" Text="{Binding WaveCountText}" Foreground="{StaticResource MutedBrush}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    </Grid>
+                </Border>
+            </Grid>
+
+        </DockPanel>
 
         <!-- Progress -->
         <Grid Grid.Row="3" Margin="0,10,0,6">

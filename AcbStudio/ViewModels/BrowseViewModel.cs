@@ -37,6 +37,9 @@ public sealed class BrowseViewModel : ObservableObject
         StopPreviewCommand = new RelayCommand(_preview.Stop);
     }
 
+    /// <summary>Raised with the ACB path after a bank opens successfully.</summary>
+    public event Action<string>? ProjectOpened;
+
     public ObservableCollection<CueItem> Cues { get; } = [];
     public ObservableCollection<WaveformItem> Waveforms { get; } = [];
     public ObservableCollection<LogEntry> Log { get; } = [];
@@ -145,6 +148,7 @@ public sealed class BrowseViewModel : ObservableObject
         _setStatus(summary);
         AddLog($"Opened {path}", LogKind.Info);
         AddLog($"Paired  {_project.AwbPath}", LogKind.Info);
+        ProjectOpened?.Invoke(path);
     }
 
     private async Task PreviewSelectedAsync()

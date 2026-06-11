@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>AcbStudio</RootNamespace>
     <AssemblyName>AcbStudio</AssemblyName>
-    <Version>2.0.0</Version>
+    <Version>2.1.0</Version>
     <Product>ACB Studio</Product>
     <Description>CRIWARE ADX2 (ACB/AWB/HCA) audio bank toolkit for RE4 console ports</Description>
   </PropertyGroup>

@@ -3,101 +3,118 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="clr-namespace:AcbStudio.Views"
         Title="ACB Studio"
-        Width="1120" Height="760" MinWidth="980" MinHeight="660"
+        Width="1180" Height="780" MinWidth="1020" MinHeight="660"
         Background="{StaticResource BgBrush}"
-        FontFamily="Consolas"
+        FontFamily="Segoe UI"
         Foreground="{StaticResource TextBrush}"
         WindowStartupLocation="CenterScreen"
         Opacity="0"
+        AllowDrop="True" Drop="OnWindowDrop" DragOver="OnWindowDragOver"
         Closing="OnWindowClosing">
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="4"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="3"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Accent strip -->
-        <Border Grid.Row="0" Background="{StaticResource AccentGradient}"/>
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="{StaticResource AccentGradient}"/>
 
-        <!-- Header -->
-        <Grid Grid.Row="1" Margin="24,14,24,4">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="ACB STUDIO" FontSize="18" FontWeight="Bold"
-                           Foreground="{StaticResource TextBrush}"/>
-                <TextBlock Text="for RE4 PS4 &amp; Switch · CRIWARE ADX2 (ACB/AWB/HCA)" FontSize="11"
-                           Foreground="{StaticResource MutedBrush}" Margin="14,7,0,0"/>
-            </StackPanel>
-            <Button Style="{StaticResource FlatButton}" HorizontalAlignment="Right"
-                    Content="?" FontSize="15" FontWeight="Bold" Padding="13,4"
-                    Click="AboutClick"/>
-        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="208"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <!-- Tab bar with sliding indicator -->
-        <Grid Grid.Row="2" Margin="14,2,14,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="3"/>
-                <RowDefinition Height="1"/>
-            </Grid.RowDefinitions>
+            <!-- ━━ Sidebar ━━ -->
+            <Border Grid.Column="0" Background="{StaticResource SidebarBrush}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <RadioButton x:Name="TabBrowse" Style="{StaticResource TabButton}" GroupName="tabs"
-                             Content="Browse" IsChecked="True" Checked="TabChecked"/>
-                <RadioButton x:Name="TabExtract" Style="{StaticResource TabButton}" GroupName="tabs"
-                             Content="Extract" Checked="TabChecked"/>
-                <RadioButton x:Name="TabInject" Style="{StaticResource TabButton}" GroupName="tabs"
-                             Content="Inject" Checked="TabChecked"/>
-                <RadioButton x:Name="TabConvert" Style="{StaticResource TabButton}" GroupName="tabs"
-                             Content="Convert" Checked="TabChecked"/>
-            </StackPanel>
+                    <!-- App identity -->
+                    <StackPanel Grid.Row="0" Margin="22,20,16,18">
+                        <TextBlock Text="ACB STUDIO" FontSize="17" FontWeight="Bold"
+                                   Foreground="{StaticResource TextBrush}"/>
+                        <TextBlock Text="RE4 console audio modding" Style="{StaticResource HintText}"
+                                   FontSize="10.5" Margin="1,3,0,0"/>
+                    </StackPanel>
 
-            <Canvas Grid.Row="1" x:Name="IndicatorCanvas">
-                <Border x:Name="TabIndicator" Height="3" Width="0" Canvas.Left="0"
-                        Background="{StaticResource AccentGradient}" CornerRadius="1.5"/>
-            </Canvas>
+                    <!-- Navigation -->
+                    <StackPanel Grid.Row="1">
+                        <RadioButton x:Name="NavHome" Style="{StaticResource SidebarButton}" GroupName="nav"
+                                     Tag="&#xE80F;" Content="Home" IsChecked="True" Checked="NavChecked"/>
+                        <RadioButton x:Name="NavBrowse" Style="{StaticResource SidebarButton}" GroupName="nav"
+                                     Tag="&#xE8D6;" Content="Browse &amp; Extract" Checked="NavChecked"/>
+                        <RadioButton x:Name="NavExtract" Style="{StaticResource SidebarButton}" GroupName="nav"
+                                     Tag="&#xE896;" Content="Quick Extract" Checked="NavChecked"
+                                     Visibility="{Binding Options.IsAdvanced, Converter={StaticResource BoolToVis}}"/>
+                        <RadioButton x:Name="NavInject" Style="{StaticResource SidebarButton}" GroupName="nav"
+                                     Tag="&#xE895;" Content="Replace Sounds" Checked="NavChecked"/>
+                        <RadioButton x:Name="NavConvert" Style="{StaticResource SidebarButton}" GroupName="nav"
+                                     Tag="&#xE8AB;" Content="Convert" Checked="NavChecked"/>
+                    </StackPanel>
 
-            <Border Grid.Row="2" Background="{StaticResource LineBrush}" Margin="2,0"/>
-        </Grid>
+                    <!-- Footer: advanced switch + about -->
+                    <StackPanel Grid.Row="2" Margin="22,0,16,16">
+                        <Border Background="{StaticResource LineBrush}" Height="1" Margin="-6,0,0,12"/>
+                        <CheckBox Style="{StaticResource ToggleSwitch}" Content="Advanced mode"
+                                  IsChecked="{Binding Options.IsAdvanced}"
+                                  ToolTip="Show Quick Extract, waveform internals and encoder options"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <Button Style="{StaticResource GhostButton}" Content="？ About" FontSize="11"
+                                    Click="AboutClick"/>
+                            <TextBlock Text="v2.1" Style="{StaticResource HintText}" FontSize="10.5"
+                                       VerticalAlignment="Center" Margin="10,0,0,0" Opacity="0.6"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
 
-        <!-- Tab content -->
-        <Grid Grid.Row="3" x:Name="ContentHost">
-            <views:BrowseView x:Name="BrowseTabView" DataContext="{Binding Browse}">
-                <views:BrowseView.RenderTransform>
-                    <TranslateTransform/>
-                </views:BrowseView.RenderTransform>
-            </views:BrowseView>
-            <views:ExtractView x:Name="ExtractTabView" DataContext="{Binding Extract}" Visibility="Collapsed">
-                <views:ExtractView.RenderTransform>
-                    <TranslateTransform/>
-                </views:ExtractView.RenderTransform>
-            </views:ExtractView>
-            <views:InjectView x:Name="InjectTabView" DataContext="{Binding Inject}" Visibility="Collapsed">
-                <views:InjectView.RenderTransform>
-                    <TranslateTransform/>
-                </views:InjectView.RenderTransform>
-            </views:InjectView>
-            <views:ConvertView x:Name="ConvertTabView" DataContext="{Binding Convert}" Visibility="Collapsed">
-                <views:ConvertView.RenderTransform>
-                    <TranslateTransform/>
-                </views:ConvertView.RenderTransform>
-            </views:ConvertView>
+            <!-- ━━ Content ━━ -->
+            <Grid Grid.Column="1" x:Name="ContentHost">
+                <views:HomeView x:Name="HomeTabView" DataContext="{Binding Home}">
+                    <views:HomeView.RenderTransform>
+                        <TranslateTransform/>
+                    </views:HomeView.RenderTransform>
+                </views:HomeView>
+                <views:BrowseView x:Name="BrowseTabView" DataContext="{Binding Browse}" Visibility="Collapsed">
+                    <views:BrowseView.RenderTransform>
+                        <TranslateTransform/>
+                    </views:BrowseView.RenderTransform>
+                </views:BrowseView>
+                <views:ExtractView x:Name="ExtractTabView" DataContext="{Binding Extract}" Visibility="Collapsed">
+                    <views:ExtractView.RenderTransform>
+                        <TranslateTransform/>
+                    </views:ExtractView.RenderTransform>
+                </views:ExtractView>
+                <views:InjectView x:Name="InjectTabView" DataContext="{Binding Inject}" Visibility="Collapsed">
+                    <views:InjectView.RenderTransform>
+                        <TranslateTransform/>
+                    </views:InjectView.RenderTransform>
+                </views:InjectView>
+                <views:ConvertView x:Name="ConvertTabView" DataContext="{Binding Convert}" Visibility="Collapsed">
+                    <views:ConvertView.RenderTransform>
+                        <TranslateTransform/>
+                    </views:ConvertView.RenderTransform>
+                </views:ConvertView>
+            </Grid>
         </Grid>
 
         <!-- Status bar -->
-        <Border Grid.Row="4" Background="{StaticResource PanelBrush}">
-            <Grid Margin="12,5">
+        <Border Grid.Row="2" Background="{StaticResource SidebarBrush}">
+            <Grid Margin="14,5">
                 <TextBlock Text="{Binding Status}" FontSize="11" Foreground="{StaticResource MutedBrush}"/>
-                <TextBlock Text="v2.0" FontSize="11" Foreground="{StaticResource MutedBrush}"
-                           Opacity="0.6" HorizontalAlignment="Right"/>
             </Grid>
         </Border>
 
         <!-- About overlay -->
-        <Grid x:Name="AboutOverlay" Grid.RowSpan="5" Visibility="Collapsed" Opacity="0">
+        <Grid x:Name="AboutOverlay" Grid.RowSpan="3" Visibility="Collapsed" Opacity="0">
             <Border Background="#C80D0D18" MouseLeftButtonDown="AboutScrimClick"/>
             <Border x:Name="AboutCard" Width="620" MaxHeight="560" VerticalAlignment="Center"
                     Background="{StaticResource BgBrush}" CornerRadius="10"
@@ -114,14 +131,14 @@
                     <Border Background="{StaticResource AccentGradient}" CornerRadius="10,10,0,0"/>
                     <ScrollViewer Grid.Row="1" Margin="28,18" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
-                            <TextBlock Text="ACB Studio 2.0" FontSize="16" FontWeight="Bold"
+                            <TextBlock Text="ACB Studio 2.1" FontSize="16" FontWeight="Bold"
                                        Foreground="{StaticResource TextBrush}"/>
                             <TextBlock Style="{StaticResource HintText}" Margin="0,4,0,14"
                                        Text="CRIWARE ADX2 audio bank toolkit for the PS4 / Switch ports of Resident Evil 4. Browse cues, extract named WAVs, inject replacements with loop-aware re-encoding, and batch-convert WAV ↔ HCA."/>
 
                             <TextBlock Style="{StaticResource SectionTitle}" Foreground="{StaticResource AccentBrush}" Text="How to inject"/>
                             <TextBlock Style="{StaticResource HintText}" Margin="10,4,0,14" FontSize="12" Foreground="{StaticResource TextBrush}"
-                                       Text="1. Inject tab → open your .acb (the .awb auto-pairs by filename).&#10;2. Pick a waveform row — double-click to hear it.&#10;3. Replace with WAV… — any rate works, it auto-resamples to the bank.&#10;4. Save modified bank → drop both files onto your console via LayeredFS."/>
+                                       Text="1. Replace Sounds → open your .acb (the .awb auto-pairs by filename).&#10;2. Pick a waveform row — double-click to hear it.&#10;3. Replace with WAV… — any rate works, it auto-resamples to the bank.&#10;4. Save modified bank → drop both files onto your console via LayeredFS."/>
 
                             <TextBlock Style="{StaticResource SectionTitle}" Foreground="{StaticResource AccentBrush}" Text="Credits"/>
                             <TextBlock Style="{StaticResource HintText}" Margin="10,4,0,14" FontSize="12" Foreground="{StaticResource TextBrush}"

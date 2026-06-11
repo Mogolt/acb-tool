@@ -37,7 +37,9 @@
                     Content="Browse" Command="{Binding BrowseOutCommand}"/>
         </Grid>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,6,0,4">
+        <!-- Encoder options: advanced mode only (defaults: auto-detect + Highest) -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,6,0,4"
+                    Visibility="{Binding DataContext.Options.IsAdvanced, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}">
             <TextBlock Style="{StaticResource FieldLabel}" Text="Direction:"/>
             <ComboBox Style="{StaticResource DarkCombo}" Width="240" Margin="8,0,24,0"
                       ItemsSource="{x:Static vm:ConvertViewModel.DirectionChoices}"

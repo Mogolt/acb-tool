@@ -39,6 +39,9 @@ public sealed class InjectViewModel : ObservableObject
         SaveCommand = new RelayCommand(Save);
     }
 
+    /// <summary>Raised with the ACB path after a bank opens successfully.</summary>
+    public event Action<string>? ProjectOpened;
+
     public ObservableCollection<WaveformItem> Waveforms { get; } = [];
     public ObservableCollection<PendingItem> Pending { get; } = [];
     public ObservableCollection<LogEntry> Log { get; } = [];
@@ -166,6 +169,7 @@ public sealed class InjectViewModel : ObservableObject
         _setStatus(summary);
         AddLog($"Opened {path}", LogKind.Info);
         AddLog($"Paired  {_project.AwbPath}", LogKind.Info);
+        ProjectOpened?.Invoke(path);
     }
 
     // ── previews ─────────────────────────────────────────────────────────────

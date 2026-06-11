@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,8 +20,8 @@ public partial class MainWindow : Window
 
     private readonly MainViewModel _vm = new();
     private UserControl[] _views = [];
-    private RadioButton[] _tabs = [];
-    private int _currentTab;
+    private RadioButton[] _navs = [];
+    private int _currentView;
     private bool _ready;
 
     public MainWindow()
@@ -28,12 +29,14 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = _vm;
 
-        _views = [BrowseTabView, ExtractTabView, InjectTabView, ConvertTabView];
-        _tabs = [TabBrowse, TabExtract, TabInject, TabConvert];
+        _views = [HomeTabView, BrowseTabView, ExtractTabView, InjectTabView, ConvertTabView];
+        _navs = [NavHome, NavBrowse, NavExtract, NavInject, NavConvert];
+
+        _vm.Home.NavigateRequested += NavigateTo;
+        _vm.Home.OpenBankRequested += OpenAcb;
 
         SourceInitialized += (_, _) => EnableDarkTitleBar();
         ContentRendered += (_, _) => OnFirstRender();
-        SizeChanged += (_, _) => { if (_ready) MoveIndicator(_currentTab, animate: false); };
     }
 
     private void EnableDarkTitleBar()
@@ -48,34 +51,60 @@ public partial class MainWindow : Window
         if (_ready)
             return;
         _ready = true;
-
-        MoveIndicator(0, animate: false);
         BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(320)));
     }
 
     private void OnWindowClosing(object sender, CancelEventArgs e) => _vm.OnAppClosing();
 
-    // ── Tabs ─────────────────────────────────────────────────────────────────
+    // ── Navigation ───────────────────────────────────────────────────────────
 
-    private void TabChecked(object sender, RoutedEventArgs e)
+    private void NavigateTo(string key)
+    {
+        var target = key switch
+        {
+            "browse" => NavBrowse,
+            "extract" => NavExtract,
+            "inject" => NavInject,
+            "convert" => NavConvert,
+            _ => NavHome,
+        };
+        target.IsChecked = true;
+    }
+
+    private void OpenAcb(string path)
+    {
+        if (!File.Exists(path))
+        {
+            _vm.Status = $"File not found: {path}";
+            return;
+        }
+        _vm.Browse.AcbPath = path;
+        _vm.Browse.LoadProject(path);
+        if (string.IsNullOrWhiteSpace(_vm.Browse.OutDir))
+        {
+            _vm.Browse.OutDir = Path.Combine(Path.GetDirectoryName(path)!,
+                Path.GetFileNameWithoutExtension(path) + "_wav");
+        }
+        NavigateTo("browse");
+    }
+
+    private void NavChecked(object sender, RoutedEventArgs e)
     {
         if (_views.Length == 0)
             return;
 
-        int index = Array.IndexOf(_tabs, (RadioButton)sender);
-        if (index < 0 || index == _currentTab && _ready)
+        int index = Array.IndexOf(_navs, (RadioButton)sender);
+        if (index < 0 || index == _currentView && _ready)
             return;
 
         _vm.OnTabSwitched();
-        _currentTab = index;
+        _currentView = index;
 
         for (int i = 0; i < _views.Length; i++)
             _views[i].Visibility = i == index ? Visibility.Visible : Visibility.Collapsed;
 
         if (!_ready)
             return;
-
-        MoveIndicator(index, animate: true);
 
         // Fade + slide the incoming view.
         var view = _views[index];
@@ -93,31 +122,46 @@ public partial class MainWindow : Window
             });
     }
 
-    private void MoveIndicator(int index, bool animate)
+    // ── Drop-anywhere routing ────────────────────────────────────────────────
+
+    private void OnWindowDragOver(object sender, DragEventArgs e)
     {
-        var tab = _tabs[index];
-        if (tab.ActualWidth <= 0)
+        e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
+        e.Handled = true;
+    }
+
+    private void OnWindowDrop(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetData(DataFormats.FileDrop) is not string[] paths || paths.Length == 0)
             return;
 
-        Point origin = tab.TranslatePoint(new Point(0, 0), IndicatorCanvas);
-        double inset = 14;
-        double left = origin.X + inset;
-        double width = Math.Max(0, tab.ActualWidth - inset * 2);
+        string? acb = paths.FirstOrDefault(p => p.EndsWith(".acb", StringComparison.OrdinalIgnoreCase));
+        string? awb = paths.FirstOrDefault(p => p.EndsWith(".awb", StringComparison.OrdinalIgnoreCase));
+        var audio = paths.Where(p => p.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
+                                  || p.EndsWith(".hca", StringComparison.OrdinalIgnoreCase)).ToList();
 
-        if (!animate)
+        if (acb is not null)
         {
-            TabIndicator.BeginAnimation(Canvas.LeftProperty, null);
-            TabIndicator.BeginAnimation(WidthProperty, null);
-            Canvas.SetLeft(TabIndicator, left);
-            TabIndicator.Width = width;
-            return;
+            OpenAcb(acb);
         }
-
-        var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
-        TabIndicator.BeginAnimation(Canvas.LeftProperty,
-            new DoubleAnimation(left, TimeSpan.FromMilliseconds(280)) { EasingFunction = ease });
-        TabIndicator.BeginAnimation(WidthProperty,
-            new DoubleAnimation(width, TimeSpan.FromMilliseconds(280)) { EasingFunction = ease });
+        else if (awb is not null)
+        {
+            // Quick Extract is an advanced feature — reveal it for this.
+            _vm.Options.IsAdvanced = true;
+            _vm.Extract.AwbPath = awb;
+            if (string.IsNullOrWhiteSpace(_vm.Extract.OutDir))
+            {
+                _vm.Extract.OutDir = Path.Combine(Path.GetDirectoryName(awb)!,
+                    Path.GetFileNameWithoutExtension(awb) + "_wav");
+            }
+            _vm.Extract.LoadAwb(awb);
+            NavigateTo("extract");
+        }
+        else if (audio.Count > 0)
+        {
+            _vm.Convert.AddPaths(audio);
+            NavigateTo("convert");
+        }
     }
 
     // ── About overlay ────────────────────────────────────────────────────────
