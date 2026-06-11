@@ -5,10 +5,13 @@ the PS4 and Switch ports of **Resident Evil 4**. Drop a replacement WAV on a
 cue, save, copy the modified bank onto your console, and hear your audio
 in-game.
 
-**Version 2.0** is a ground-up rewrite in C#/WPF (previously Python/tkinter):
-same four-tab workflow, much smoother UI — animated tab transitions, eased
-progress, hardware-accelerated rendering — and a single portable EXE instead
-of an installer. HCA encode/decode now runs on [VGAudio](https://github.com/Thealexbarney/VGAudio)
+**Version 2** is a ground-up rewrite in C#/WPF (previously Python/tkinter)
+with a fully overhauled interface: sidebar navigation, a Home screen with
+plain-language task cards and recent banks, drop-a-file-anywhere routing,
+smooth animations throughout, and a single portable EXE instead of an
+installer. An **Advanced mode** toggle keeps the default flow simple while
+giving power users Quick Extract, waveform internals, and encoder options.
+HCA encode/decode now runs on [VGAudio](https://github.com/Thealexbarney/VGAudio)
 (the C# reference implementation), which also let two 1.x workarounds
 disappear: loop points are set programmatically instead of via the smpl-chunk
 injection hack, and the broken upstream smpl parser is no longer in the
